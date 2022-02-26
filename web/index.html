@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="data:,">
+    <title>my_bevy_game</title>
+
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <script type="module">
+        import init from "./api/my_bevy_game.js";
+
+        async function run() {
+            await init("/api/my_bevy_game_bg.wasm");
+        }
+
+        const reloadInterval = 1000;
+        const maxFailCount = 20;
+
+        async function startReloadInterval() {
+            const fetchVersion = () => fetch("/api/version").then(response => response.text());
+            const version = await fetchVersion();
+            let failedCount = 0;
+            let intervalToken;
+
+            function reloadIfChanged() {
+                fetchVersion()
+                    .then(newVersion => {
+                        if (version != newVersion) {
+                            window.location.reload();
+                        }
+                    })
+                    .catch(e => {
+                        failedCount += 1;
+                        if (failedCount >= maxFailCount) {
+                            clearInterval(intervalToken);
+                            console.warn("Server disconnected");
+                        }
+                    });
+            }
+
+            intervalToken = setInterval(reloadIfChanged, reloadInterval)
+        }
+
+        run();
+        startReloadInterval();
+    </script>
+
+    <script>
+        document.body.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+        });
+    </script>
+</body>
+
+</html>
