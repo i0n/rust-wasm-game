@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 NAME := rust-wasm-game
-GCR_NAME := gcr.io/organic-spirit-217211/${NAME}
+GCR_NAME := registry.digitalocean.com/i0n/${NAME}
 ROOT_PACKAGE := github.com/i0n/rust-wasm-game
 
 BRANCH     := $(shell git rev-parse --abbrev-ref HEAD 2> /dev/null  || echo 'unknown')
